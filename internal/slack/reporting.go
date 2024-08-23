@@ -7,11 +7,11 @@ import (
 	"github.com/itsindigo/yvr-deals/internal/feed_reader"
 )
 
-type DealReporter struct {
+type Reporter struct {
 	Slack Slack
 }
 
-func (dr *DealReporter) ReportDeal(ctx context.Context, deal feedreader.Deal) error {
+func (dr *Reporter) ReportYVRDeal(ctx context.Context, deal feedreader.Deal) error {
 	message, err := GetDealMessageBlocks(deal)
 
 	if err != nil {
@@ -27,7 +27,7 @@ func (dr *DealReporter) ReportDeal(ctx context.Context, deal feedreader.Deal) er
 	return nil
 }
 
-func (dr *DealReporter) ReportParsingError(ctx context.Context, err error) error {
+func (dr *Reporter) ReportParsingError(ctx context.Context, err error) error {
 	message, err := GetErrorMessageBlocks(err.Error())
 
 	if err != nil {
@@ -43,8 +43,8 @@ func (dr *DealReporter) ReportParsingError(ctx context.Context, err error) error
 	return nil
 }
 
-func NewDealReporter(slack Slack) *DealReporter {
-	return &DealReporter{
+func NewReporter(slack Slack) *Reporter {
+	return &Reporter{
 		Slack: slack,
 	}
 }
