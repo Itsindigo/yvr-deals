@@ -69,10 +69,10 @@ func (s *Slack) SendMessage(ctx context.Context, blocks Blocks) (string, error) 
 	return response, nil
 }
 
-func NewSlack(webhookID string) *Slack {
+func NewSlack(webhookID string) Slack {
 	hookUrl := fmt.Sprintf("https://hooks.slack.com/services/%s", webhookID)
 
-	return &Slack{
+	return Slack{
 		HookURL: hookUrl,
 		HTTPClient: &http.Client{
 			Timeout: 15 * time.Second,
