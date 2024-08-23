@@ -5,6 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/itsindigo/yvr-deals/internal/app_config"
+	"github.com/itsindigo/yvr-deals/internal/feed_reader"
 	"github.com/itsindigo/yvr-deals/internal/slack"
 )
 
@@ -15,8 +16,20 @@ func main() {
 
 	slackClient := slack.NewSlack(config.Slack.WebhookID)
 	dealReporter := slack.NewDealReporter(slackClient)
+	yvr := feedreader.NewYvrHandler()
 
-	dealReporter.ReportDeal(ctx)
+	deals, err := yvr.GetPastNDayDeals(ctx, 21)
+
+	if err != nil {
+		slog.Error("Error getting deals", slog.String("error", err.Error()))
+		dealReporter.ReportParsingError(ctx, err)
+		return
+	}
+
+	for _, d := range deals {
+		slog.Info("Found Deal", slog.String("title", d.Title))
+		dealReporter.ReportDeal(ctx, d)
+	}
 
 	slog.Info("Job finished, exiting.")
 }
